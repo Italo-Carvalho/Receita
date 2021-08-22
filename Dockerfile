@@ -1,6 +1,5 @@
 FROM python:3.7-alpine
-MAINTAINER Italo Carvalho
-
+LABEL org.opencontainers.image.authors="italocarvalhoti@hotmail.com"
 ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /requirements.txt
