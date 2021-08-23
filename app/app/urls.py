@@ -7,4 +7,5 @@ urlpatterns = [
         "api/user/",
         include("user.urls"),
     ),
+    path("api/receita/", include("receita.urls")),
 ]
