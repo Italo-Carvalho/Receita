@@ -5,6 +5,8 @@ from receita import views
 # /api/receita/tags/1/
 router = DefaultRouter()
 router.register("tags", views.TagViewSet)
+router.register("ingredients", views.IngredientViewSet)
+router
 
 app_name = "receita"
 
