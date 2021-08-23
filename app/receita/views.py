@@ -48,3 +48,9 @@ class ReceitaViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retrieve the receitas for the authenticated user"""
         return self.queryset.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        """Return a appropriate serializer class"""
+        if self.action == "retrieve":
+            return serializers.ReceitaDetailSerializer
+        return self.serializer_class

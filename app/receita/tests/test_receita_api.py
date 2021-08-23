@@ -3,11 +3,26 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from core.models import Receita
-from receita.serializers import ReceitaSerializer
+from core.models import Receita, Tag, Ingredient
+from receita.serializers import ReceitaSerializer, ReceitaDetailSerializer
 
 
 RECEITAS_URL = reverse("receita:receita-list")
+
+
+def detail_url(receita_id):
+    """Return receita url"""
+    return reverse("receita:receita-detail", args=[receita_id])
+
+
+def sample_tag(user, name="Nordeste"):
+    """Create and return a sample tag"""
+    return Tag.objects.create(user=user, name=name)
+
+
+def sample_ingredient(user, name="Batata"):
+    """Create and return a sample ingredient"""
+    return Ingredient.objects.create(user=user, name=name)
 
 
 def sample_receita(user, **params):
@@ -63,4 +78,16 @@ class PrivateReceitaApiTests(TestCase):
         serializer = ReceitaSerializer(receitas, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data, serializer.data)
+
+    def test_view_receita_detail(self):
+        """Test viewing a receita detail"""
+        receita = sample_receita(user=self.user)
+        receita.tags.add(sample_tag(user=self.user))
+        receita.ingredients.add(sample_ingredient(user=self.user))
+
+        url = detail_url(receita.id)
+        res = self.client.get(url)
+
+        serializer = ReceitaDetailSerializer(receita)
         self.assertEqual(res.data, serializer.data)
