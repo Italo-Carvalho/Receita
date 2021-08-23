@@ -56,6 +56,6 @@ class ModelTests(TestCase):
     def test_receita_str(self):
         """Test the receita string representation"""
         receita = models.Receita.objects.create(
-            user=sample_user(), tile="strogonoff", time_minutes=5, price=5.00
+            user=sample_user(), title="strogonoff", time_minutes=5, price=5.00
         )
         self.assertEqual(str(receita), receita.title)
