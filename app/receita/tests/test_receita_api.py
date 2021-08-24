@@ -1,3 +1,6 @@
+import tempfile
+import os
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -8,6 +11,11 @@ from receita.serializers import ReceitaSerializer, ReceitaDetailSerializer
 
 
 RECEITAS_URL = reverse("receita:receita-list")
+
+
+def image_upload_url(receita_id):
+    """Return URL for receita image upload"""
+    return reverse("receita:receita-upload-image", args=[receita_id])
 
 
 def detail_url(receita_id):
@@ -174,3 +182,37 @@ class PrivateReceitaApiTests(TestCase):
         self.assertEqual(receita.price, payload["price"])
         tags = receita.tags.all()
         self.assertEqual(len(tags), 0)
+
+
+class ReceitaImageUploadTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            "usertest@italocar.com", "testpass"
+        )
+        self.client.force_authenticate(self.user)
+        self.receita = sample_receita(user=self.user)
+
+    def tearDown(self):
+        self.receita.image.delete()
+
+    def test_upload_image_to_receita(self):
+        """Test uploading an image to receita"""
+        url = image_upload_url(self.receita.id)
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as ntf:
+            img = Image.new("RGB", (10, 10))
+            img.save(ntf, format="JPEG")
+            ntf.seek(0)
+            res = self.client.post(url, {"image": ntf}, format="multipart")
+
+        self.receita.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn("image", res.data)
+        self.assertTrue(os.path.exists(self.receita.image.path))
+
+    def test_upload_image_bad_request(self):
+        """Test uploading an invalid image"""
+        url = image_upload_url(self.receita.id)
+        res = self.client.post(url, {"image": "notimage"}, format="multipart")
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

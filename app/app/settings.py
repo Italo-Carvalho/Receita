@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_yasg",
     "core",
     "user",
     "receita",
@@ -132,3 +133,16 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ORIGIN_WHITELIST = os.environ.get(
     "DJANGO_CORS_ORIGIN_WHITELIST", default=[]
 )
+
+
+SWAGGER_SETTINGS = {
+    "VALIDATOR_URL": None,
+    "USE_SESSION_AUTH": False,
+    "SECURITY_DEFINITIONS": {
+        "api_key": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        }
+    },
+}
