@@ -17,6 +17,7 @@ services:
       - DB_NAME=app
       - DB_USER=postgres
       - DB_PASS=supersecretpassword
+      - DJANGO_CORS_ORIGIN_WHITELIST=["0.0.0.0:8000", "127.0.0.1:8000"]
     depends_on:
       - db
 
