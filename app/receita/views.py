@@ -49,12 +49,28 @@ class ReceitaViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def _params_to_int(self, qs):
+        """Convert a list of string IDs to a list of integers"""
+
+        return [int(str_id) for str_id in qs.split(",")]
+
     def get_queryset(self):
         """Retrieve the receitas for the authenticated user"""
         if getattr(self, "swagger_fake_view", False):
             # queryset just for schema generation metadata
             return self.queryset.none()
-        return self.queryset.filter(user=self.request.user)
+        tags = self.request.query_params.get("tags")
+        ingredients = self.request.query_params.get("ingredients")
+        queryset = self.queryset
+
+        if tags:
+            tag_ids = self._params_to_int(tags)
+            queryset = self.queryset.filter(tags__id__in=tag_ids)
+        if ingredients:
+            ingredient_ids = self._params_to_int(ingredients)
+            queryset = self.queryset.filter(ingredients__id__in=ingredient_ids)
+
+        return queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         """Return a appropriate serializer class"""
