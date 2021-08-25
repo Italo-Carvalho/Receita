@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
-from core.models import Tag
+from core.models import Tag, Receita
 from receita.serializers import TagSerializer
 
 TAGS_URL = reverse("receita:tag-list")
@@ -70,3 +70,34 @@ class PrivateTagsApiTests(TestCase):
         payload = {"name": ""}
         res = self.client.post(TAGS_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_tags_assigned_to_receitas(self):
+        """Test filtering tags by those assigned to receitas"""
+        tag1 = Tag.objects.create(user=self.user, name="Aniversario")
+        tag2 = Tag.objects.create(user=self.user, name="Almoço")
+        receita = Receita.objects.create(
+            title="Café da manha", time_minutes=10, price=5.00, user=self.user
+        )
+        receita.tags.add(tag1)
+        res = self.client.get(TAGS_URL, {"assigned_only": 1})
+
+        serializer1 = TagSerializer(tag1)
+        serializer2 = TagSerializer(tag2)
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
+
+    def test_retrieve_tags_assigned_unique(self):
+        """Test filtering tags by assigne returns unique items"""
+        tag = Tag.objects.create(user=self.user, name="Café da manhã")
+        Tag.objects.create(user=self.user, name="Lanche")
+        receita1 = Receita.objects.create(
+            title="Panquecas", time_minutes=5, price=3.00, user=self.user
+        )
+        receita1.tags.add(tag)
+        receita2 = Receita.objects.create(
+            title="Mingau", time_minutes=3, price=2.00, user=self.user
+        )
+        receita2.tags.add(tag)
+
+        res = self.client.get(TAGS_URL, {"assigned_only": 1})
+        self.assertEqual(len(res.data), 1)
