@@ -53,7 +53,7 @@ class Tag(models.Model):
 
     name = models.CharField(max_length=255)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tags"
     )
 
     def __str__(self):
@@ -65,7 +65,9 @@ class Ingredient(models.Model):
 
     name = models.CharField(max_length=255)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="ingredients",
     )
 
     def __str__(self):
@@ -76,7 +78,9 @@ class Receita(models.Model):
     """Receita object"""
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="receitas",
     )
     title = models.CharField(max_length=255)
     time_minutes = models.IntegerField()

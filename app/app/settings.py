@@ -21,6 +21,19 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework.authtoken",
+    "drf_yasg",
+    "django_filters",
+]
+
+LOCAL_APPS = [
+    "core.apps.CoreConfig",
+    "user.apps.UserConfig",
+    "receita.apps.ReceitaConfig",
+]
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -28,12 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "drf_yasg",
-    "core",
-    "user",
-    "receita",
+    *THIRD_PARTY_APPS,
+    *LOCAL_APPS,
 ]
 
 MIDDLEWARE = [
@@ -79,6 +88,8 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASS"),
     }
 }
+# If problem in view function, Django rolls back transaction.
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -129,6 +140,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "core.User"
 
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 10,
+}
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ORIGIN_WHITELIST = os.environ.get(
     "DJANGO_CORS_ORIGIN_WHITELIST", default=[]

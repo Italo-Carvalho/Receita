@@ -19,9 +19,11 @@ class BaseReceitaAttrViewSet(
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        assigned_only = bool(
-            int(self.request.query_params.get("assigned_only", 0))
+        # not not = bool(), but more faster
+        assigned_only = not not int(
+            self.request.query_params.get("assigned_only", 0)
         )
+
         queryset = self.queryset
         if assigned_only:
             queryset = queryset.filter(receita__isnull=False)

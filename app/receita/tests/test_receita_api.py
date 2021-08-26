@@ -72,7 +72,7 @@ class PrivateReceitaApiTests(TestCase):
         receitas = Receita.objects.all().order_by("-id")
         serializer = ReceitaSerializer(receitas, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data["results"], serializer.data)
 
     def test_receitas_limited_to_user(self):
         """Test retrieving receitas for user"""
@@ -85,8 +85,8 @@ class PrivateReceitaApiTests(TestCase):
         receitas = Receita.objects.filter(user=self.user)
         serializer = ReceitaSerializer(receitas, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(len(res.data["results"]), 1)
+        self.assertEqual(res.data["results"], serializer.data)
 
     def test_view_receita_detail(self):
         """Test viewing a receita detail"""
@@ -232,9 +232,9 @@ class ReceitaImageUploadTests(TestCase):
         serializer2 = ReceitaSerializer(receita2)
         serializer3 = ReceitaSerializer(receita3)
 
-        self.assertIn(serializer1.data, res.data)
-        self.assertIn(serializer2.data, res.data)
-        self.assertNotIn(serializer3.data, res.data)
+        self.assertIn(serializer1.data, res.data["results"])
+        self.assertIn(serializer2.data, res.data["results"])
+        self.assertNotIn(serializer3.data, res.data["results"])
 
     def test_filter_receitas_by_ingredients(self):
         """Test returning a receitas with specific ingredients"""
@@ -254,6 +254,6 @@ class ReceitaImageUploadTests(TestCase):
         serializer1 = ReceitaSerializer(receita1)
         serializer2 = ReceitaSerializer(receita2)
         serializer3 = ReceitaSerializer(receita3)
-        self.assertIn(serializer1.data, res.data)
-        self.assertIn(serializer2.data, res.data)
-        self.assertNotIn(serializer3.data, res.data)
+        self.assertIn(serializer1.data, res.data["results"])
+        self.assertIn(serializer2.data, res.data["results"])
+        self.assertNotIn(serializer3.data, res.data["results"])
