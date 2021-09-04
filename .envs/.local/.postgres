@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=receita
+POSTGRES_USER=enRdqqRfWQMVcWQROCUTODkSLRazQdaC
+POSTGRES_PASSWORD=MV25zBqFsaxahFAlVVBcwICNn6lXkci19ZMQ5XwxD0wy6cU6W6vWCamYrDseZCT2
